@@ -1,8 +1,6 @@
 # ApiCheck
 
-Writing Windows Runtime (WinRT) code in C++ that needs to run on older, downlevel versions of Windows, while still taking advantage of new system APIs if present, is a pain. This library makes it easy to check for APIs in the supported fashion with high performance.
-
-I've used code in production apps that have shipped to millions of users that's based on this library, so I'm confident that it works well. Also, while I'm no C++ expert, I've performed performance analysis of this code and I've settled on an API surface that I feel is very easy to use but still maximizes speed and minimizes memory usage. APIs are never checked more than once, and the checks can be avoided entirely based on your app's minimum supported version of Windows or checks that have already been made earlier.
+Writing Windows Runtime (WinRT) code in C++ that needs to run on older, downlevel versions of Windows, while still taking advantage of new system APIs if present, is a pain. This library makes it easy to check for APIs in the supported fashion with high performance. I've used code in production apps that have shipped to millions of users that's based on this library.
 
 ## Building and integrating
 
@@ -90,6 +88,21 @@ These wrappers take three type parameters:
 1. `RuntimeClass`: The RuntimeClass (full API name) of the type.
 2. `Property` / `Method` / `Event` / `NamedValue` : The member of the type to look for.
 3. `IntroducedIn`: Optionally, the version of Windows that the member was introduced in, if it's in the universal contract.
+
+## Why is it fast? (Why is it normally slow?)
+
+The supported way to check for the existence of an API is to use the [`Windows.Foundation.Metadata.ApiInformation`](https://docs.microsoft.com/en-us/uwp/api/Windows.Foundation.Metadata.ApiInformation) API. Under the hood, that requires looking up and instantiating the activation factory for `IApiInformationStatics` by name, and then calling the API, which does a string lookup of the API which requires loading metadata (.winmd) files.
+
+This library:
+
+* Is faster to code for, since it's just simple standard C++ function calls that just "do the right thing"
+* Caches the activation factory for you
+* Caches API existence checks for you so that they're only performed once
+* Can often avoid checking for the API entirely, if:
+    * The user is running a version of Windows that is guaranteed to always have the API
+    * Your app's manifest dictates that the minimum version of Windows required to install the app already has the API
+
+Under the hood, it uses [magic statics](https://docs.microsoft.com/en-us/cpp/cpp/storage-classes-cpp) and function templates. Each unique API checked adds about 83 bytes to your executable, and the cached checks only take about 1 μs on my machine. (In comparison, the small metadata file that Windows loads for an API check would easily be 500× that size or more.)
 
 ---
 © 2021 Travis Spomer. [MIT license](License.txt).
