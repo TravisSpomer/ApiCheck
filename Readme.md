@@ -5,10 +5,12 @@ Writing Windows Runtime (WinRT) code in C++ that needs to run on older, downleve
 ## Building and integrating
 
 1. Copy `ApiCheck.cpp`, `ApiCheck.h`, and `ApiCheckCore.h` into your project.
-2. (Optional) In `ApiCheckCore.h`, set `RequiredVersion` to the minimum version of Windows that your app supports.
-2. Use the `ApiCheck::` functions accordingly.
+2. *(Optional)* In `ApiCheckCore.h`, set `RequiredVersion` to the minimum version of Windows that your app supports.
+3. Use the `ApiCheck::` functions accordingly.
 
 **This library is in standard C++ and requires no additional frameworks beyond the Windows SDK.** Your project can use standard C++ (with WRL, for example), C++/CX, or C++/WinRT. As long as it links to the Windows Runtime and calls `RoInitialize`, it should work.
+
+`ApiCheck.cpp` is only needed if you want the specific helper functions in that file. If you don't need those, delete `ApiCheck.cpp` and remove the corresponding function declarations from `ApiCheck.h`. Boom—header-only library!
 
 ## Usage
 
