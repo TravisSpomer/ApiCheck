@@ -7,12 +7,10 @@ I've used code in production apps that have shipped to millions of users that's 
 ## Building and integrating
 
 1. Copy `ApiCheck.cpp`, `ApiCheck.h`, and `ApiCheckCore.h` into your project.
-2. (Optional) in `ApiCheckCore.h`, set `RequiredVersion` to the minimum version of Windows that your app supports.
+2. (Optional) In `ApiCheckCore.h`, set `RequiredVersion` to the minimum version of Windows that your app supports.
 2. Use the `ApiCheck::` functions accordingly.
 
-Your project can use pure C++ (with WRL, for example), C++/CX, or C++/WinRT. As long as it links to the Windows Runtime and calls `RoInitialize`, it should work.
-
-There are no interesting build requirements that I'm aware of.
+**This library is in standard C++ and requires no additional frameworks beyond the Windows SDK.** Your project can use standard C++ (with WRL, for example), C++/CX, or C++/WinRT. As long as it links to the Windows Runtime and calls `RoInitialize`, it should work.
 
 ## Usage
 
@@ -43,12 +41,12 @@ The supported values for `WindowsVersion` are in `ApiCheckCore.h`:
 | `TH1` | Threshold 1 = version 1507 = build 10240 |
 | `TH2` | Threshold 2 = version 1511 = build 10586 |
 | `RS1` | Redstone 1 = Anniversary Update = version 1607 = build 14393 |
-| `RS2` | Redstone 2 = Creators Update = version 1703 = build 15063, or 15254 for final feature2 build of Windows 10 Mobile |
+| `RS2` | Redstone 2 = Creators Update = version 1703 = build 15063 (or 15254 for final feature2 build of Windows 10 Mobile) |
 | `RS3` | Redstone 3 = Fall Creators Update = version 1709 = build 16299 |
 | `RS4` | Redstone 4 = April 2018 Update = version 1803 = build 17134 |
 | `RS5` | Redstone 5 = October 2018 Update = version 1809 = build 17763 |
-| `CY19H1` | 19H1 = May 2019 Update = version 1903 = build 18362 |
-| `CY20H1` | 20H1 = May 2020 Update = version 2004 = build 19041 |
+| `CY19H1` | May 2019 Update = version 1903 = build 18362 |
+| `CY20H1` | May 2020 Update = version 2004 = build 19041 |
 | `None` | *default value* |
 
 Hey, don't blame me for the absolute insanity of Windows version naming.
@@ -58,7 +56,11 @@ Hey, don't blame me for the absolute insanity of Windows version naming.
 Instead of calling [`Windows.Foundation.Metadata.ApiInformation.IsTypePresent`](https://docs.microsoft.com/en-us/uwp/api/Windows.Foundation.Metadata.ApiInformation) directly, call `ApiCheck::IsTypePresent`. See `ApiCheck.cpp` for a few examples of this.
 
 ```cpp
-if (ApiCheck::IsTypePresent<RuntimeClass_Windows_UI_Xaml_Media_RevealBrush, ApiCheck::WindowsVersion::RS3>()) { /* ... */ }
+if (ApiCheck::IsTypePresent<RuntimeClass_Windows_UI_Xaml_Media_RevealBrush,
+    ApiCheck::WindowsVersion::RS3>())
+{
+    /* ... */
+}
 ```
 
 `IsTypePresent` takes two type parameters:
@@ -75,7 +77,12 @@ ApiCheck also provides wrappers for `IsPropertyPresent`, `IsMethodPresent`, `IsE
 ```cpp
 extern const wchar_t PreviewKeyDown[] = L"PreviewKeyDown";
 
-if (ApiCheck::IsPropertyPresent<RuntimeClass_Windows_UI_Xaml_UIElement, PreviewKeyDown, ApiCheck::WindowsVersion::RS3>()) { /* ... */ }
+if (ApiCheck::IsPropertyPresent<RuntimeClass_Windows_UI_Xaml_UIElement,
+    PreviewKeyDown,
+    ApiCheck::WindowsVersion::RS3>())
+{
+    /* ... */
+}
 ```
 
 These wrappers take three type parameters:
